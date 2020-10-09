@@ -19,8 +19,8 @@ local function remove_comment_string(line)
 end
 
 local function get_selection()
-  start_sel = api.nvim_eval('line("\'<")') - 1
-  end_sel = api.nvim_eval('line("\'>")')
+  start_sel = vim.fn.line("'<") - 1
+  end_sel = vim.fn.line("'>")
   lines = api.nvim_buf_get_lines(0, start_sel, end_sel, true)
 end
 
