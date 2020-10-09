@@ -19,9 +19,8 @@ local function remove_comment_string(line)
 end
 
 local function get_selection()
-  -- TODO handle reverse selection and single line selection
-  start_sel = api.nvim_eval('getpos("\'<")[1]') - 1
-  end_sel = api.nvim_eval('getpos("\'>")[1]')
+  start_sel = api.nvim_eval('line("\'<")') - 1
+  end_sel = api.nvim_eval('line("\'>")')
   lines = api.nvim_buf_get_lines(0, start_sel, end_sel, true)
 end
 
