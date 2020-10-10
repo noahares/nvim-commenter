@@ -5,6 +5,4 @@ The goal was to get some auto-commenting to work. I also want to learn Lua. This
 
 Provides `SingleCommenter`, `MultiCommenter`, `SingleUncommenter` and `MultiUncommenter` commands which perform their actions on the current line or the selection respectively.
 
-This plugin uses the '< and '> marks for commenting out blocks in visual mode. As these only get updated after exiting visual mode, the commands need to be prepended with `<C-u>` when used as mappings.
-
-E.g: `vnoremap <leader>x :<C-u>MultiCommenter<cr>`
+To quickly comment out selected lines in visual mode use something like this: `vnoremap <leader>x :MultiCommenter<cr>`
