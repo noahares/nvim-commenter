@@ -9,6 +9,8 @@ local function get_comment_string()
    comment = "//%s"
    comment_stripped = "//"
   end
+  -- more stupid stuff, this time lua, '-' is treated special in strings
+  comment_stripped = string.gsub(comment_stripped, "%-", "%%-")
 end
 
 local function add_comment_string(line)
@@ -18,8 +20,10 @@ end
 
 local function remove_comment_string(line)
   get_comment_string()
-  local first_char = string.find(line, '%w')
-  local indices = string.find(line, comment_stripped, 1, first_char)
+  local indices = string.find(line, comment_stripped)
+  if comment_stripped == "%-%-" then
+   comment_stripped = "--"
+  end
   return string.sub(line, indices + string.len(comment_stripped))
 end
 
@@ -45,21 +49,19 @@ local function multi_uncommenter()
   api.nvim_buf_set_lines(0, start_sel, end_sel, true, lines)
 end
 
-local function single_commenter()
+local function single_commenter_toggle()
   local line = api.nvim_get_current_line()
-  line = add_comment_string(line)
-  api.nvim_set_current_line(line)
-end
-
-local function single_uncommenter()
-  local line = api.nvim_get_current_line()
-  line = remove_comment_string(line)
+  get_comment_string()
+    if string.find(line, comment_stripped) then
+    line = remove_comment_string(line)
+  else
+    line = add_comment_string(line)
+  end
   api.nvim_set_current_line(line)
 end
 
 return {
   multi_commenter = multi_commenter,
   multi_uncommenter = multi_uncommenter,
-  single_commenter = single_commenter,
-  single_uncommenter = single_uncommenter
+  single_commenter_toggle = single_commenter_toggle
 }
