@@ -4,6 +4,11 @@ local start_sel, end_sel, lines, comment, comment_stripped
 local function get_comment_string()
   comment = api.nvim_eval('&commentstring')
   comment_stripped = string.format(comment, "")
+  -- stupid c,cpp default comment string
+  if comment_stripped == "/**/" then
+   comment = "//%s"
+   comment_stripped = "//"
+  end
 end
 
 local function add_comment_string(line)
