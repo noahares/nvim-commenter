@@ -2,7 +2,7 @@ local api = vim.api
 local start_sel, end_sel, lines, comment, comment_stripped
 
 local function get_comment_string()
-  comment = api.nvim_eval('&commentstring')
+  comment = vim.bo.commentstring
   comment_stripped = string.format(comment, "")
   -- stupid c,cpp default comment string
   if comment_stripped == "/**/" then
@@ -13,18 +13,17 @@ local function get_comment_string()
   comment_stripped = string.gsub(comment_stripped, "%-", "%%-")
 end
 
+-- TODO handle indent
 local function add_comment_string(line)
-  get_comment_string()
   return string.format(comment, line)
 end
 
 local function remove_comment_string(line)
-  get_comment_string()
-  local indices = string.find(line, comment_stripped)
+  local indice = string.find(line, comment_stripped)
   if comment_stripped == "%-%-" then
    comment_stripped = "--"
   end
-  return string.sub(line, indices + string.len(comment_stripped))
+  return string.sub(line, indice + string.len(comment_stripped))
 end
 
 local function get_selection()
@@ -33,25 +32,24 @@ local function get_selection()
   lines = api.nvim_buf_get_lines(0, start_sel, end_sel, true)
 end
 
-local function multi_commenter()
+local function multi_commenter_toggle()
   get_selection()
-  for i,l in ipairs(lines) do
-    lines[i] = add_comment_string(l)
-  end
-  api.nvim_buf_set_lines(0, start_sel, end_sel, true, lines)
-end
-
-local function multi_uncommenter()
-  get_selection()
-  for i,l in ipairs(lines) do
-    lines[i] = remove_comment_string(l)
+  get_comment_string()
+  if string.find(lines[1], comment_stripped) then
+    for i,l in ipairs(lines) do
+      lines[i] = remove_comment_string(l)
+    end
+  else
+    for i,l in ipairs(lines) do
+      lines[i] = add_comment_string(l)
+    end
   end
   api.nvim_buf_set_lines(0, start_sel, end_sel, true, lines)
 end
 
 local function single_commenter_toggle()
-  local line = api.nvim_get_current_line()
   get_comment_string()
+  local line = api.nvim_get_current_line()
     if string.find(line, comment_stripped) then
     line = remove_comment_string(line)
   else
@@ -61,7 +59,6 @@ local function single_commenter_toggle()
 end
 
 return {
-  multi_commenter = multi_commenter,
-  multi_uncommenter = multi_uncommenter,
+  multi_commenter_toggle = multi_commenter_toggle,
   single_commenter_toggle = single_commenter_toggle
 }
