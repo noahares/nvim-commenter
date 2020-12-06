@@ -9,4 +9,4 @@ To quickly comment out selected lines in visual mode use something like this: `v
 
 # TODO
 
-* tex comments do not work
+* keep indentation when adding comments

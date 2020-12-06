@@ -10,16 +10,20 @@ local function get_comment_string()
     two_parts = true
     c_back = comment:sub(c_i+3)
   end
-  -- handle - and * in commentstring
-  c_front_format = c_front:gsub("%-", "%%-")
+  -- handle -, % and * in commentstring
+  c_front_format = c_front:gsub("%%", "%%%%")
+  c_front_format = c_front_format:gsub("%-", "%%-")
   c_front_format = c_front_format:gsub("%*", "%%*")
   c_back_format = c_back:gsub("%-", "%%-")
   c_back_format = c_back_format:gsub("%*", "%%*")
-  -- TODO: handle tex string <05-12-20, @noahares> --
 end
 
 -- TODO handle indent
 local function add_comment_string(line)
+  -- special case for tex comments
+  if comment == "%%s" then
+    comment = "%%%s"
+  end
   return comment:format(line)
 end
 
@@ -65,7 +69,7 @@ local function multi_commenter_toggle()
       api.nvim_buf_set_lines(0, end_sel, end_sel+1, true, back)
     end
   else
-    if lines[1]:find(c_front) then
+    if lines[1]:find(c_front_format) then
       for i,l in ipairs(lines) do
         lines[i] = remove_comment_string(l)
       end
