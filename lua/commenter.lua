@@ -44,8 +44,12 @@ local function remove_comment_string(line)
 end
 
 local function get_selection()
-  start_sel = vim.fn.line("'<") - 1
-  end_sel = vim.fn.line("'>")
+  start_sel = vim.fn.getpos('v')[2]
+  end_sel = vim.fn.getcurpos()[2]
+  if end_sel < start_sel then
+    start_sel, end_sel = end_sel, start_sel
+  end
+  start_sel = start_sel - 1
   lines = api.nvim_buf_get_lines(0, start_sel, end_sel, true)
 end
 
