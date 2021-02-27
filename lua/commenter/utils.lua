@@ -48,6 +48,10 @@ function Utils.get_selection()
   return start_sel, end_sel, lines
 end
 
+function Utils.update_selection(added_front, added_back)
+  -- TODO: implement to restore correct visual selection <27-02-21, @noahares> --
+end
+
 function Utils.starts_with(line, prefix)
   local line_trimmed = vim.fn.trim(line)
   return line_trimmed:sub(1, #prefix) == prefix
