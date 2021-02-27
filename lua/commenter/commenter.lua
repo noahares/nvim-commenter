@@ -38,8 +38,11 @@ end
 
 local function single_commenter_toggle()
   local commentstring = vim.bo.commentstring
-  local front, _ = utils.get_comment_string_parts(commentstring)
   local line = api.nvim_get_current_line()
+  if commentstring == [[/*%s*/]] and utils.starts_with(line, [[//]]) then
+    commentstring = [[//%s]]
+  end
+  local front, _ = utils.get_comment_string_parts(commentstring)
   if utils.starts_with(line, front) then
     line = utils.remove_comment_string(line, commentstring)
   else
@@ -50,11 +53,14 @@ end
 
 local function multi_commenter_toggle()
   local commentstring = vim.bo.commentstring
-  local front, back = utils.get_comment_string_parts(commentstring)
   local first, last, lines = utils.get_selection()
   if #lines == 1 then
     return single_commenter_toggle()
   end
+  if commentstring == [[/*%s*/]] and utils.starts_with(lines[1], [[//]]) then
+   commentstring = [[//%s]]
+  end
+  local front, back = utils.get_comment_string_parts(commentstring)
   if back == '' then
     api.nvim_buf_set_lines(0, first, last, true, per_line_comment_toggle(lines, commentstring))
   else
